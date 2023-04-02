@@ -1,15 +1,16 @@
 package com.multiplayercardgame.backend.entities;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class Game {
     private final Deck deck;
     private final Stack<Card> discardPile;
     public final List<Player> players;
-    public int currentPlayerIndex;
+    private int currentPlayerIndex;
     public boolean reverseOrder;
     private int drawCards;
-    private final Random random;
 
     public Game(List<String> playerNames) {
         this.deck = new Deck();
@@ -22,7 +23,138 @@ public class Game {
         currentPlayerIndex = 0;
         reverseOrder = false;
         drawCards = 0;
-        random = new Random();
+    }
+
+    public void play() {
+        dealCards();
+        Card topCard = discardPile.peek();
+        while (!isOver()) {
+            Player currentPlayer = players.get(currentPlayerIndex);
+            System.out.println("It's " + currentPlayer.getName() + "'s turn.");
+            System.out.println("Top card: " + topCard);
+            System.out.println("Your hand: " + currentPlayer.getHand());
+            Card card = currentPlayer.chooseCard(topCard);
+            if (card != null) {
+                System.out.println(currentPlayer.getName() + " played " + card);
+                currentPlayer.playCard(card, deck);
+                handleActionCard(card);
+                topCard = card;
+            } else {
+                if (deck.isEmpty()) {
+                    System.out.println("The deck is empty. Game over!");
+                    break;
+                }
+                System.out.println(currentPlayer.getName() + " drew a card.");
+                currentPlayer.drawCard(deck);
+                drawCards = 0;
+            }
+            System.out.println();
+            currentPlayerIndex = getNextPlayerIndex();
+        }
+        Player winner = getWinner();
+        if (winner != null) {
+            System.out.println("Game over! " + winner.getName() + " wins!");
+        } else {
+            System.out.println("Game over! Match is drawn.");
+        }
+    }
+
+    public void dealCards() {
+        for (int i = 0; i < 5; i++) {
+            for (Player player : players) {
+                player.drawCard(deck);
+            }
+        }
+        discardPile.push(deck.dealCard());
+    }
+
+    public int getNextPlayerIndex() {
+        int increment = reverseOrder ? -1 : 1;
+        int nextPlayerIndex = currentPlayerIndex + increment;
+        if (nextPlayerIndex < 0) {
+            nextPlayerIndex = players.size() - 1;
+        } else if (nextPlayerIndex == players.size()) {
+            nextPlayerIndex = 0;
+        }
+        return nextPlayerIndex;
+    }
+
+    public boolean isOver() {
+        int countPlayers = 0;
+        for (Player player : players) {
+            if (player.getHand().isEmpty()) {
+                countPlayers++;
+            }
+        }
+        return countPlayers == 1;
+    }
+
+    private Player getWinner() {
+        for (Player player : players) {
+            if (player.getHand().isEmpty()) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    private void handleActionCard(Card card) {
+        switch (card.getRank()) {
+            case ACE -> {
+                currentPlayerIndex = getNextPlayerIndex();
+                System.out.println("Skipping next player " + players.get(currentPlayerIndex).getName());
+            }
+            case KING -> {
+                reverseOrder = !reverseOrder;
+                System.out.println("Reverse order!");
+            }
+            case QUEEN -> {
+                drawCards += 2;
+                System.out.println("Draw 2 cards!");
+            }
+            case JACK -> {
+                drawCards += 4;
+                System.out.println("Draw 4 cards!");
+            }
+            default -> {
+            }
+        }
+        if (drawCards > 0) {
+            Player nextPlayer = players.get(getNextPlayerIndex());
+            System.out.println("Draw " + drawCards + " cards for " + nextPlayer.getName());
+            for (int i = 0; i < drawCards; i++) {
+                nextPlayer.drawCard(deck);
+            }
+            drawCards = 0;
+        }
+    }
+}
+
+
+
+
+/*
+import java.util.*;
+
+public class Game {
+    private final Deck deck;
+    private final Stack<Card> discardPile;
+    public final List<Player> players;
+    public int currentPlayerIndex;
+    public boolean reverseOrder;
+    private int drawCards;
+
+    public Game(List<String> playerNames) {
+        this.deck = new Deck();
+        this.deck.shuffle();
+        this.discardPile = new Stack<>();
+        this.players = new ArrayList<>();
+        for (String name : playerNames) {
+            players.add(new Player(name));
+        }
+        currentPlayerIndex = 0;
+        reverseOrder = false;
+        drawCards = 0;
     }
 
     public void play() {
