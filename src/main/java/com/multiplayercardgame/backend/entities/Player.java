@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private final String name;
-    private final List<Card> hand;
+    private String name;
+    private List<Card> hand;
 
     public Player(String name) {
         this.name = name;
@@ -36,6 +36,10 @@ public class Player {
             }
         }
         return null;
+    }
+
+    public void setHand(List<Card> list) {
+        this.hand = list;
     }
 }
 /*    private String name;

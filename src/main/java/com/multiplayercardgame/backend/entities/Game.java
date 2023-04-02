@@ -5,9 +5,9 @@ import java.util.*;
 public class Game {
     private final Deck deck;
     private final Stack<Card> discardPile;
-    private final List<Player> players;
-    private int currentPlayerIndex;
-    private boolean reverseOrder;
+    public final List<Player> players;
+    public int currentPlayerIndex;
+    public boolean reverseOrder;
     private int drawCards;
     private final Random random;
 
@@ -59,7 +59,7 @@ public class Game {
         }
     }
 
-    private void dealCards() {
+    public void dealCards() {
         for (int i = 0; i < 5; i++) {
             for (Player player : players) {
                 player.drawCard(deck);
@@ -68,7 +68,7 @@ public class Game {
         discardPile.push(deck.dealCard());
     }
 
-    private int getNextPlayerIndex() {
+    public int getNextPlayerIndex() {
         int increment = reverseOrder ? -1 : 1;
         int nextPlayerIndex = currentPlayerIndex + increment;
         if (nextPlayerIndex < 0) {
@@ -79,7 +79,7 @@ public class Game {
         return nextPlayerIndex;
     }
 
-    private boolean isOver() {
+    public boolean isOver() {
         int countPlayers = 0;
         for (Player player : players) {
             if (player.getHand().isEmpty()) {
@@ -89,7 +89,7 @@ public class Game {
         return countPlayers == 1;
     }
 
-    private Player getWinner() {
+    public Player getWinner() {
         Player winner = null;
         for (Player player : players) {
             if (player.getHand().isEmpty()) {
@@ -100,7 +100,7 @@ public class Game {
         return winner;
     }
 
-    private void handleActionCard(Card card) {
+    public void handleActionCard(Card card) {
         Rank rank = card.getRank();
         if (rank == Rank.ACE) {
             System.out.println("Next player skipped!");

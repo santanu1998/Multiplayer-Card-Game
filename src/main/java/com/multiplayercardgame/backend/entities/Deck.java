@@ -29,8 +29,14 @@ public class Deck {
         cards.push(card);
     }
 
+
+
     public void shuffle() {
         Collections.shuffle(cardList, new Random());
+    }
+
+    public int size() {
+        return cardList.size();
     }
 }
     /*private List<Card> cards;
