@@ -1,11 +1,10 @@
 
 package com.multiplayercardgame.backend.entities;
 
-import org.junit.jupiter.api.Assertions;
+import com.multiplayercardgame.backend.services.Game;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

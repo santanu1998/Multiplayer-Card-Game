@@ -1,4 +1,8 @@
-package com.multiplayercardgame.backend.entities;
+package com.multiplayercardgame.backend.services;
+
+import com.multiplayercardgame.backend.entities.Card;
+import com.multiplayercardgame.backend.entities.Deck;
+import com.multiplayercardgame.backend.entities.Player;
 
 import java.util.ArrayList;
 import java.util.List;

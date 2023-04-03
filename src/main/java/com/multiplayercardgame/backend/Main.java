@@ -1,6 +1,6 @@
 package com.multiplayercardgame.backend;
 
-import com.multiplayercardgame.backend.entities.Game;
+import com.multiplayercardgame.backend.services.Game;
 
 import java.util.Arrays;
 import java.util.List;
