@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class Game {
-    private final Deck deck;
+    /*private final Deck deck;
     private final Stack<Card> discardPile;
     public final List<Player> players;
     private int currentPlayerIndex;
@@ -91,6 +91,91 @@ public class Game {
             }
         }
         return countPlayers == 1;
+    }*/
+
+    private final Deck deck;
+    private final Stack<Card> discardPile;
+    public final List<Player> players;
+    private int currentPlayerIndex;
+    public boolean reverseOrder;
+    private int drawCards;
+
+    public Game(List<String> playerNames) {
+        this.deck = new Deck();
+        this.discardPile = new Stack<>();
+        this.players = new ArrayList<>();
+        for (String name : playerNames) {
+            players.add(new Player(name));
+        }
+        currentPlayerIndex = (int) (Math.random() * players.size());
+        reverseOrder = Math.random() < 0.5;
+        drawCards = 0;
+        dealCards();
+    }
+
+    public void play() {
+        Card topCard = discardPile.peek();
+        while (!isOver()) {
+            Player currentPlayer = players.get(currentPlayerIndex);
+            System.out.println("It's " + currentPlayer.getName() + "'s turn.");
+            System.out.println("Top card: " + topCard);
+            System.out.println("Your hand: " + currentPlayer.getHand());
+            Card card = currentPlayer.chooseCard(topCard);
+            if (card != null) {
+                System.out.println(currentPlayer.getName() + " played " + card);
+                currentPlayer.playCard(card, deck);
+                handleActionCard(card);
+                topCard = card;
+            } else {
+                if (deck.isEmpty()) {
+                    System.out.println("The deck is empty. Game over!");
+                    break;
+                }
+                System.out.println(currentPlayer.getName() + " drew a card.");
+                currentPlayer.drawCard(deck);
+                drawCards = 0;
+            }
+            System.out.println();
+            currentPlayerIndex = getNextPlayerIndex();
+        }
+        Player winner = getWinner();
+        if (winner != null) {
+            System.out.println("Game over! " + winner.getName() + " wins!");
+        } else {
+            System.out.println("Game over! Match is drawn.");
+        }
+    }
+
+    public void dealCards() {
+        deck.shuffle();
+        for (int i = 0; i < 5; i++) {
+            for (Player player : players) {
+                player.drawCard(deck);
+            }
+        }
+        discardPile.push(deck.dealCard());
+    }
+
+    public int getNextPlayerIndex() {
+        int increment = reverseOrder ? -1 : 1;
+        int nextPlayerIndex = currentPlayerIndex + increment;
+        if (nextPlayerIndex < 0) {
+            nextPlayerIndex = players.size() - 1;
+        } else if (nextPlayerIndex == players.size()) {
+            nextPlayerIndex = 0;
+        }
+        return nextPlayerIndex;
+    }
+
+    public boolean isOver() {
+        int countPlayers = 0;
+        for (Player player : players) {
+            if (player.getHand().size() == 0) {
+                return true;
+            }
+            countPlayers++;
+        }
+        return countPlayers == 1 && deck.isEmpty();
     }
 
     private Player getWinner() {
